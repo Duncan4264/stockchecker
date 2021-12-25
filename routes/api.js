@@ -41,7 +41,6 @@ module.exports = function (app) {
     .get(async function (req, res){
       const {stock, like} = req.query;
       if(Array.isArray(stock)) {
-        console.log(stock);
         const {symbol, latestPrice } = await getStock(stock[0]);
         const {symbol: symbol2, latestPrice: latestPrice2 } = await getStock(stock[1]);
         const firststock = await saveStock(stock[0], like, req.ip);
@@ -57,24 +56,26 @@ module.exports = function (app) {
           stockData.push({
             stock: symbol,
             price: latestPrice,
-            rel_likes: firststock.likes.length - secondstock.likes.length,
-        });
-      }
+            rel_likes: secondstock.likes.length - firststock.likes.length,
+          });
+        }
         if(!symbol2) {
           stockData.push({
             rel_likes: secondstock.likes.length - firststock.likes.length,
           });
-        }
-        else {
+        } else {
           stockData.push({
             stock: symbol2,
             price: latestPrice2,
             rel_likes: secondstock.likes.length - firststock.likes.length,
-        });
-      }
-      res.json({stockData});
+          });
+        }
+        console.log(stockData);
+      res.json({
+        stockData,
+      });
       return;
-    } else { 
+      }
       const {symbol, latestPrice } = await getStock(stock);
       console.log(symbol, latestPrice);
       if(!symbol) {
@@ -91,6 +92,5 @@ module.exports = function (app) {
           likes: oneStockData.likes.length,
         }
       });
-    };
-  });
-}
+    });
+  };

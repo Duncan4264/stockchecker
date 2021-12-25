@@ -19,7 +19,7 @@ suite("Functional Tests", function() {
     test("1 stock", function(done) {
       chai
         .request(server)
-        .get("/api/stock-prices")
+        .get("/api/stock-prices/")
         .query({ stock: "goog" })
         .end(function(err, res) {
           //complete this one too
@@ -37,7 +37,7 @@ suite("Functional Tests", function() {
     test("1 stock with like", function(done) {
       chai
         .request(server)
-        .get("/api/stock-prices")
+        .get("/api/stock-prices/")
         .query({ stock: "goog", like: true })
         .end((err, res) => {
           assert.equal(res.status, 200);
@@ -51,7 +51,7 @@ suite("Functional Tests", function() {
     test("1 stock with like again (ensure likes arent double counted)", function(done) {
       chai
         .request(server)
-        .get("/api/stock-prices")
+        .get("/api/stock-prices/")
         .query({ stock: "goog", like: "true" })
         .end((err, res) => {
           assert.equal(res.status, 200);
@@ -64,12 +64,12 @@ suite("Functional Tests", function() {
     test("2 stocks", function(done) {
       chai
         .request(server)
-        .get("/api/stock-prices")
-        .query({ stock: ["goog", "msft"] })
+        .get("/api/stock-prices/")
+        .query({ stock: ["goog", "aapl"] })
         .end((err, res) => {
           assert.equal(res.status, 200);
           assert.equal(res.body.stockData[0].stock, "GOOG");
-          assert.equal(res.body.stockData[1].stock, "MSFT");
+          assert.equal(res.body.stockData[1].stock, "AAPL");
           assert.isNumber(res.body.stockData[0].rel_likes, "should be number");
           assert.isNumber(res.body.stockData[1].rel_likes, "should be number");
           numOflike = [
@@ -83,17 +83,16 @@ suite("Functional Tests", function() {
     test("2 stocks with like", function(done) {
       chai
         .request(server)
-        .get("/api/stock-prices")
-        .query({ stock: ["goog", "msft"], like: "true" })
+        .get("/api/stock-prices/")
+        .query({ stock: ["GOOG", "AAPL"], like: "true" })
         .end((err, res) => {
           assert.equal(res.status, 200);
           assert.equal(res.body.stockData[0].stock, "GOOG");
-          assert.equal(res.body.stockData[1].stock, "MSFT");
+          assert.equal(res.body.stockData[1].stock, "AAPL");
           assert.isNumber(res.body.stockData[0].rel_likes, "should be number");
           assert.isNumber(res.body.stockData[1].rel_likes, "should be number");
-          console.log(res.body.stockData[0].rel_likes)
-          assert.isAbove(res.body.stockData[0].rel_likes, -1);
-          assert.isAbove(res.body.stockData[1].rel_likes, -1);
+          assert.isAbove(res.body.stockData[0].rel_likes, 0);
+          // assert.isAbove(res.body.stockData[1].rel_likes, 0);
         
           done();
         });
